@@ -1,0 +1,66 @@
+# Configuração do servidor
+server:
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Configuração da aplicação
+spring:
+  application:
+    name: classroomapi
+  
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/classroomapi_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: Admin@123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 1200000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+# Configuração de validação
+  validation:
+    enabled: true
+
+# Configuração de logging
+logging:
+  level:
+    br.edu.infnet.classroomapi: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Configuração do Swagger
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+
+classroom:
+  api:
+    version: 1.0.0
+    description: "API para gerenciamento de alunos e disciplinas"

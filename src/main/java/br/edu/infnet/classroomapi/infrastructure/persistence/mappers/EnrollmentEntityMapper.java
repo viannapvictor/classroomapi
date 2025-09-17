@@ -7,15 +7,11 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {StudentEntityMapper.class, SubjectEntityMapper.class})
 public interface EnrollmentEntityMapper {
-    
-    @Mapping(target = "student", ignore = true)
-    @Mapping(target = "subject", ignore = true)
+
     EnrollmentEntity toEntity(Enrollment enrollment);
-    
-    @Mapping(target = "student", ignore = true)
-    @Mapping(target = "subject", ignore = true)
+
     Enrollment toDomain(EnrollmentEntity entity);
     
     List<Enrollment> toDomainList(List<EnrollmentEntity> entities);

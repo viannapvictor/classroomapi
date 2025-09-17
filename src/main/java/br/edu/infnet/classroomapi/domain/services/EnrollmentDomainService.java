@@ -33,7 +33,7 @@ public class EnrollmentDomainService {
         }
 
         return student.getEnrollments().stream()
-                .noneMatch(e -> e.getSubject().getId().equals(subject.getId()) 
+                .noneMatch(e -> e.getSubject().getId().equals(subject.getId())
                         && e.getStatus() == EnrollmentStatus.ACTIVE);
     }
     

@@ -8,6 +8,7 @@ import br.edu.infnet.classroomapi.domain.entities.Professor;
 import br.edu.infnet.classroomapi.domain.entities.Subject;
 import br.edu.infnet.classroomapi.domain.repositories.ProfessorRepository;
 import br.edu.infnet.classroomapi.domain.repositories.SubjectRepository;
+import br.edu.infnet.classroomapi.infrastructure.persistence.repositories.EnrollmentJpaRepository;
 import br.edu.infnet.classroomapi.infrastructure.security.services.SecurityContextService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class SubjectApplicationService {
     private final SubjectRepository subjectRepository;
     private final ProfessorRepository professorRepository;
     private final SubjectDTOMapper subjectMapper;
+    private final EnrollmentJpaRepository enrollmentRepository;
     private final SecurityContextService securityContextService;
 
     public SubjectResponseDTO createSubject(CreateSubjectRequestDTO request) {
@@ -38,7 +40,7 @@ public class SubjectApplicationService {
         subject.setProfessor(professor);
 
         Subject savedSubject = subjectRepository.save(subject);
-        return subjectMapper.toResponseDTO(savedSubject);
+        return subjectMapper.toResponseDTO(savedSubject, enrollmentRepository);
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +48,7 @@ public class SubjectApplicationService {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Subject not found with id: " + id));
 
-        return subjectMapper.toResponseDTO(subject);
+        return subjectMapper.toResponseDTO(subject, enrollmentRepository);
     }
 
     @Transactional(readOnly = true)
@@ -54,13 +56,13 @@ public class SubjectApplicationService {
         Subject subject = subjectRepository.findByCode(code)
                 .orElseThrow(() -> new RuntimeException("Subject not found with code: " + code));
 
-        return subjectMapper.toResponseDTO(subject);
+        return subjectMapper.toResponseDTO(subject, enrollmentRepository);
     }
 
     @Transactional(readOnly = true)
     public List<SubjectResponseDTO> findAll() {
         List<Subject> subjects = subjectRepository.findAll();
-        return subjectMapper.toResponseDTOList(subjects);
+        return subjectMapper.toResponseDTOList(subjects, enrollmentRepository);
     }
 
     @Transactional(readOnly = true)
@@ -72,20 +74,20 @@ public class SubjectApplicationService {
     @Transactional(readOnly = true)
     public List<SubjectResponseDTO> findByName(String name) {
         List<Subject> subjects = subjectRepository.findByNameContainingIgnoreCase(name);
-        return subjectMapper.toResponseDTOList(subjects);
+        return subjectMapper.toResponseDTOList(subjects, enrollmentRepository);
     }
 
     @Transactional(readOnly = true)
     public List<SubjectResponseDTO> findByCurrentProfessor() {
         Long professorId = securityContextService.getCurrentProfessorId();
         List<Subject> subjects = subjectRepository.findByProfessorId(professorId);
-        return subjectMapper.toResponseDTOList(subjects);
+        return subjectMapper.toResponseDTOList(subjects, enrollmentRepository);
     }
 
     @Transactional(readOnly = true)
     public List<SubjectResponseDTO> findByProfessorId(Long professorId) {
         List<Subject> subjects = subjectRepository.findByProfessorId(professorId);
-        return subjectMapper.toResponseDTOList(subjects);
+        return subjectMapper.toResponseDTOList(subjects, enrollmentRepository);
     }
 
     public SubjectResponseDTO updateSubject(Long id, CreateSubjectRequestDTO request) {
@@ -108,7 +110,7 @@ public class SubjectApplicationService {
         updatedSubject.setCreatedAt(existingSubject.getCreatedAt());
 
         Subject savedSubject = subjectRepository.save(updatedSubject);
-        return subjectMapper.toResponseDTO(savedSubject);
+        return subjectMapper.toResponseDTO(savedSubject, enrollmentRepository);
     }
 
     public void deleteById(Long id) {

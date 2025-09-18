@@ -39,9 +39,7 @@ public class Enrollment {
         this.grade = grade;
         this.updatedAt = LocalDateTime.now();
 
-        if (grade.compareTo(new BigDecimal("7.0")) >= 0) {
-            this.complete();
-        }
+        this.complete();
     }
 
     public void complete() {

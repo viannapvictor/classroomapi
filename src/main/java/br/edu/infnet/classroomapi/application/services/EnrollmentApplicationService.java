@@ -12,6 +12,7 @@ import br.edu.infnet.classroomapi.domain.repositories.EnrollmentRepository;
 import br.edu.infnet.classroomapi.domain.repositories.StudentRepository;
 import br.edu.infnet.classroomapi.domain.repositories.SubjectRepository;
 import br.edu.infnet.classroomapi.domain.services.EnrollmentDomainService;
+import br.edu.infnet.classroomapi.infrastructure.persistence.repositories.EnrollmentJpaRepository;
 import br.edu.infnet.classroomapi.infrastructure.security.services.SecurityContextService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class EnrollmentApplicationService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final EnrollmentDTOMapper enrollmentMapper;
+    private final EnrollmentJpaRepository enrollmentJpaRepository;
     private final SecurityContextService securityContextService;
 
     public EnrollmentResponseDTO createEnrollment(CreateEnrollmentRequestDTO request) {
@@ -49,7 +51,7 @@ public class EnrollmentApplicationService {
         Enrollment enrollment = EnrollmentDomainService.createEnrollment(student, subject);
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
-        return enrollmentMapper.toResponseDTO(savedEnrollment);
+        return enrollmentMapper.toResponseDTO(savedEnrollment, enrollmentJpaRepository);
     }
 
     public EnrollmentResponseDTO assignGrade(Long enrollmentId, AssignGradeRequestDTO request) {
@@ -64,7 +66,7 @@ public class EnrollmentApplicationService {
         EnrollmentDomainService.assignGrade(enrollment, request.getGrade());
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
-        return enrollmentMapper.toResponseDTO(savedEnrollment);
+        return enrollmentMapper.toResponseDTO(savedEnrollment, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
@@ -72,25 +74,25 @@ public class EnrollmentApplicationService {
         Enrollment enrollment = enrollmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Enrollment not found"));
 
-        return enrollmentMapper.toResponseDTO(enrollment);
+        return enrollmentMapper.toResponseDTO(enrollment, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponseDTO> findAll() {
         List<Enrollment> enrollments = enrollmentRepository.findAll();
-        return enrollmentMapper.toResponseDTOList(enrollments);
+        return enrollmentMapper.toResponseDTOList(enrollments, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponseDTO> findByStudentId(Long studentId) {
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
-        return enrollmentMapper.toResponseDTOList(enrollments);
+        return enrollmentMapper.toResponseDTOList(enrollments, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponseDTO> findBySubjectId(Long subjectId) {
         List<Enrollment> enrollments = enrollmentRepository.findBySubjectId(subjectId);
-        return enrollmentMapper.toResponseDTOList(enrollments);
+        return enrollmentMapper.toResponseDTOList(enrollments, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
@@ -100,26 +102,26 @@ public class EnrollmentApplicationService {
 
         return professorSubjects.stream()
                 .flatMap(subject -> enrollmentRepository.findBySubjectId(subject.getId()).stream())
-                .map(enrollmentMapper::toResponseDTO)
+                .map(enrollment -> enrollmentMapper.toResponseDTO(enrollment, enrollmentJpaRepository))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponseDTO> findByStatus(EnrollmentStatus status) {
         List<Enrollment> enrollments = enrollmentRepository.findByStatus(status);
-        return enrollmentMapper.toResponseDTOList(enrollments);
+        return enrollmentMapper.toResponseDTOList(enrollments, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponseDTO> findApprovedBySubjectId(Long subjectId) {
         List<Enrollment> enrollments = enrollmentRepository.findApprovedBySubjectId(subjectId);
-        return enrollmentMapper.toResponseDTOList(enrollments);
+        return enrollmentMapper.toResponseDTOList(enrollments, enrollmentJpaRepository);
     }
 
     @Transactional(readOnly = true)
     public List<EnrollmentResponseDTO> findReprobedBySubjectId(Long subjectId) {
         List<Enrollment> enrollments = enrollmentRepository.findReprobedBySubjectId(subjectId);
-        return enrollmentMapper.toResponseDTOList(enrollments);
+        return enrollmentMapper.toResponseDTOList(enrollments, enrollmentJpaRepository);
     }
 
     public EnrollmentResponseDTO suspendEnrollment(Long enrollmentId) {
@@ -134,7 +136,7 @@ public class EnrollmentApplicationService {
         enrollment.suspend();
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
-        return enrollmentMapper.toResponseDTO(savedEnrollment);
+        return enrollmentMapper.toResponseDTO(savedEnrollment, enrollmentJpaRepository);
     }
 
     public EnrollmentResponseDTO reactivateEnrollment(Long enrollmentId) {
@@ -149,7 +151,7 @@ public class EnrollmentApplicationService {
         enrollment.reactivate();
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
-        return enrollmentMapper.toResponseDTO(savedEnrollment);
+        return enrollmentMapper.toResponseDTO(savedEnrollment, enrollmentJpaRepository);
     }
 
     public void deleteEnrollment(Long enrollmentId) {

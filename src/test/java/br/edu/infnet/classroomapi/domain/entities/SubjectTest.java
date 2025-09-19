@@ -1,6 +1,5 @@
 package br.edu.infnet.classroomapi.domain.entities;
 
-import br.edu.infnet.classroomapi.domain.entities.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -162,6 +161,66 @@ class SubjectTest {
         void shouldReturnZeroCountForNullEnrollments() {
             subject.setEnrollments(null);
             assertEquals(0, subject.getEnrolledStudentsCount());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for null name")
+        void shouldThrowExceptionForNullName() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Subject(null, "JAVA101", "Description", 60)
+            );
+            assertEquals("Subject name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for empty name")
+        void shouldThrowExceptionForEmptyName() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Subject("", "JAVA101", "Description", 60)
+            );
+            assertEquals("Subject name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for blank name")
+        void shouldThrowExceptionForBlankName() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Subject("   ", "JAVA101", "Description", 60)
+            );
+            assertEquals("Subject name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for null code")
+        void shouldThrowExceptionForNullCode() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Subject("Java Programming", null, "Description", 60)
+            );
+            assertEquals("Subject code cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for empty code")
+        void shouldThrowExceptionForEmptyCode() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Subject("Java Programming", "", "Description", 60)
+            );
+            assertEquals("Subject code cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for blank code")
+        void shouldThrowExceptionForBlankCode() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Subject("Java Programming", "   ", "Description", 60)
+            );
+            assertEquals("Subject code cannot be null or empty", exception.getMessage());
         }
     }
 }

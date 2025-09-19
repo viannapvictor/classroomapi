@@ -1,6 +1,5 @@
 package br.edu.infnet.classroomapi.domain.entities;
 
-import br.edu.infnet.classroomapi.domain.entities.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -173,6 +172,103 @@ class StudentTest {
                     student.setEnrollments(new ArrayList<>());
                 }
             });
+        }
+
+        @Test
+        @DisplayName("Should throw exception for null name")
+        void shouldThrowExceptionForNullName() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student(null, validCpf, "joao@email.com", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("Name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for empty name")
+        void shouldThrowExceptionForEmptyName() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("", validCpf, "joao@email.com", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("Name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for blank name")
+        void shouldThrowExceptionForBlankName() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("   ", validCpf, "joao@email.com", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("Name cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for null cpf")
+        void shouldThrowExceptionForNullCpf() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("João Silva", null, "joao@email.com", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("CPF cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for empty cpf")
+        void shouldThrowExceptionForEmptyCpf() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("João Silva", "", "joao@email.com", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("CPF cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for null email")
+        void shouldThrowExceptionForNullEmail() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("João Silva", validCpf, null, "(11) 99999-9999", validAddress)
+            );
+            assertEquals("Email cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for empty email")
+        void shouldThrowExceptionForEmptyEmail() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("João Silva", validCpf, "", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("Email cannot be null or empty", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw exception for invalid email format")
+        void shouldThrowExceptionForInvalidEmailFormat() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Student("João Silva", validCpf, "invalid-email", "(11) 99999-9999", validAddress)
+            );
+            assertEquals("Invalid email format", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should accept valid email formats")
+        void shouldAcceptValidEmailFormats() {
+            String[] validEmails = {
+                "test@example.com",
+                "user.name@domain.com",
+                "user+tag@example.org",
+                "user123@test-domain.co.uk"
+            };
+
+            for (String email : validEmails) {
+                assertDoesNotThrow(() -> 
+                    new Student("João Silva", validCpf, email, "(11) 99999-9999", validAddress)
+                );
+            }
         }
     }
 }
